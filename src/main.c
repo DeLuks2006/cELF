@@ -9,11 +9,13 @@ int main(int argc, char** argv) {
     return 1;
   }
   
-  char*   filename      = argv[1];
-  int     fd            = 0;
-  void*   file    = NULL;
-  unsigned char magic[] = {'\x7F', '\x45', '\x4C', '\x46'};
-  struct stat st        = { 0 }; 
+  char*   filename            = argv[1];
+  int     fd                  = 0;
+  void*   file                = NULL;
+  unsigned char magic[]       = {'\x7F', '\x45', '\x4C', '\x46'};
+  struct stat st              = { 0 }; 
+  Elf64_Ehdr* elf_header      = { 0 };
+  Elf64_Phdr* program_header  = { 0 };
 
   if (stat(filename, &st) == 0) {
     if (st.st_size < (off_t)SIZE){
@@ -37,7 +39,7 @@ int main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
 
-  Elf64_Ehdr* elf_header = (Elf64_Ehdr*)file;
+  elf_header = (Elf64_Ehdr*)file;
   
   for (int i = 0; i < 4; i++) {
     if (elf_header->e_ident[i] != magic[i]) {
@@ -51,7 +53,7 @@ int main(int argc, char** argv) {
 
   puts("┌─────────| Program Headers |─────────┐");
   for (int i = 0; i < elf_header->e_phnum; ++i) {
-    Elf64_Phdr* program_header = (Elf64_Phdr*)((char*)file + elf_header->e_phoff + (elf_header->e_phentsize * i));
+    program_header = (Elf64_Phdr*)((char*)file + elf_header->e_phoff + (elf_header->e_phentsize * i));
     printf("PROGRAM HEADER: 0x%02x |──────────┐\n", i);
     printPH(program_header);
   }
