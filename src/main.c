@@ -46,13 +46,13 @@ int main(int argc, char** argv) {
     }
   }
   
-  puts("┌─────────| ELF Header |─────────┐");
+  puts("┌─────────| ELF Header |──────────────┐");
   printELF(elf_header);
 
   puts("┌─────────| Program Headers |─────────┐");
   for (int i = 0; i < elf_header->e_phnum; ++i) {
     Elf64_Phdr* program_header = (Elf64_Phdr*)((char*)file + elf_header->e_phoff + (elf_header->e_phentsize * i));
-    printf("PROGRAM HEADER: 0x%02x\n", i);
+    printf("PROGRAM HEADER: 0x%02x |──────────┐\n", i);
     printPH(program_header);
   }
 
