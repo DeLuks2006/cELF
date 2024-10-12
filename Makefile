@@ -1,24 +1,45 @@
-CC = gcc
-CFLAGS = -Wall -Wshadow -Wextra -Werror -flto -O3
-IN = src/*.c
-OUT = cELF
+INCLUDEDIR	:= include
+SRCDIR			:= src
+BUILDDIR		:= build
+CACHEDIR		:= $(BUILDDIR)/cache
+OUTPUT			:= $(BUILDDIR)/cELF
+OUTPUTDBG		:= $(OUTPUT)-dbg
 
-SRCS = $(wildcard $(IN))
-OBJS = $(SRCS:.c=.o)
+CC					:= clang
+STRIP				:= llvm-strip
+COMMON_FLAGS = -Wall -Wshadow -Wextra -Werror -flto=thin -O3 -I$(INCLUDEDIR)
+LDFLAGS			:= -flto=thin -o $(OUTPUT)
+STRIPFLAGS	:= --strip-all
 
-.PHONY: all debug clean
+CFILES			:= $(shell find $(SRCDIR) -name "*.c" -type f)
+OBJFILES		:= $(CFILES:$(SRCDIR)%.c=$(CACHEDIR)%.o)
+DIRECTORIES	 = $(shell find $(SRCDIR) -type d)
+DIRECTORIES := $(DIRECTORIES:$(SRCDIR)%=$(CACHEDIR)%)
 
-all: $(OUT)
+optimized: dirs $(OBJFILES)
+	@echo -e "\e[32m==>\e[0m LD    $(OUTPUT)"
+	@$(CC) $(OBJFILES) -o $(OUTPUT) $(LDFLAGS)
+	@echo -e "\e[32m==>\e[0m STRIP $(OUTPUT)"
+	@$(STRIP) $(STRIPFLAGS) $(OUTPUT)
 
-$(OUT): $(OBJS)
-	$(CC) $(OBJS) -o $(OUT) $(CFLAGS)
+debug: COMMON_FLAGS += -g
+debug: dirs $(OBJFILES)
+	@echo -e "\e[32m==>\e[0m LD    $(OUTPUT)"
+	@$(CC) $(OBJFILES) -o $(OUTPUTDBG) $(COMMON_FLAGS)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+help:
+	@echo "Available targets:"
+	@echo "==> make optimized"
+	@echo "==> make debug"
+	@echo "==> make clean"
 
-debug: $(OBJS)
-	$(CC) $(OBJS) -o $(OUT)-dbg $(CFLAGS) -g
+
+$(CACHEDIR)/%.o: $(SRCDIR)/%.c
+	@echo -e "\e[32m==>\e[0m CC    $@"
+	@$(CC) $(COMMON_FLAGS) -c $< -o $@
+
+dirs:
+	@mkdir -p $(DIRECTORIES)
 
 clean:
-	rm -f $(OUT) $(OUT)-dbg
-
+	@rm -rf $(BUILDDIR)

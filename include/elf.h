@@ -1,5 +1,5 @@
-#ifndef elf_h
-#define elf_h
+#pragma once
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -10,7 +10,7 @@
 
 // ELF header
 typedef struct {
-  unsigned char e_ident[16];
+  unsigned char e_ident[16];    
   uint16_t      e_type;
   uint16_t      e_machine;
   uint32_t      e_version;
@@ -37,4 +37,3 @@ typedef struct {
   uint64_t  p_memsz;
   uint64_t  p_align;
 } Elf64_Phdr;
-#endif

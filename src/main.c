@@ -1,5 +1,5 @@
-#include "../include/elf.h"
-#include "../include/print.h"
+#include <elf.h>
+#include <print.h>
 
 #define SIZE 64
 
