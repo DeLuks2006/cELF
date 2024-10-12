@@ -155,7 +155,7 @@ void printELF(Elf64_Ehdr* elf_header) {
   printf("version: 0x%02x\n", elf_header->e_ident[6]);
   printf("target os: %s (0x%02x)\n", get_eh_osabi(elf_header->e_ident[7]), elf_header->e_ident[7]);
   printf("target version: 0x%02x\n", elf_header->e_ident[8]);
-  printf("file type: %s (0x%02x)\n", get_eh_type(elf_header->e_ident[0x10]), elf_header->e_ident[0x10]);
+  printf("file type: %s (0x%02x)\n", get_eh_type(elf_header->e_type), elf_header->e_type);
   printf("instruction set: %s (0x%02x)\n", get_eh_machine(elf_header->e_machine) ,elf_header->e_machine);
   printf("entry point: 0x%lx\n", elf_header->e_entry);
   printf("program header offset: 0x%lx\n", elf_header->e_phoff);
