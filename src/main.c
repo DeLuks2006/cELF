@@ -16,6 +16,9 @@ int main(int argc, char** argv) {
   struct stat st              = { 0 }; 
   Elf64_Ehdr* elf_header      = { 0 };
   Elf64_Phdr* program_header  = { 0 };
+  Elf64_Shdr* section_header  = { 0 };
+  Elf64_Shdr* string_table    = { 0 };
+  char* ptr_string_table = { 0 };
 
   if (stat(filename, &st) == 0) {
     if (st.st_size < (off_t)SIZE){
@@ -56,6 +59,17 @@ int main(int argc, char** argv) {
     program_header = (Elf64_Phdr*)((char*)file + elf_header->e_phoff + (elf_header->e_phentsize * i));
     printf("PROGRAM HEADER: 0x%02x |──────────┐\n", i);
     printPH(program_header);
+  }
+
+  section_header = (Elf64_Shdr*)((char*)file + elf_header->e_shoff);
+  string_table = &section_header[elf_header->e_shstrndx];
+  ptr_string_table = (char*)(file + string_table->sh_offset);
+  
+  puts("┌─────────| Section Headers |─────────┐");
+  for (int i = 0; i < elf_header->e_shnum; ++i) {
+    section_header = (Elf64_Shdr*)((char*)file + elf_header->e_shoff + (elf_header->e_shentsize * i));
+    printf("%d SECTION HEADER: %s\n", i, (i == 0)?"NULL":(char*)(ptr_string_table + section_header->sh_name));
+    printSH(section_header);
   }
 
 cleanup:

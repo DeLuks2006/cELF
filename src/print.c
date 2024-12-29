@@ -142,6 +142,46 @@ const char* get_ph_type(uint32_t type) {
   };
 }
 
+const char* get_sh_type(uint32_t type) {
+  switch (type) {
+    case 0: return "SHT_NULL";
+    case 1: return "SHT_PROGBITS";
+    case 2: return "SHT_SYMTAB";
+    case 3: return "SHT_STRTAB";
+    case 4: return "SHT_RELA";
+    case 5: return "SHT_HASH";
+    case 6: return "SHT_DYNAMIC";
+    case 7: return "SHT_NOTE";
+    case 8: return "SHT_NOBITS";
+    case 9: return "SHT_REL";
+    case 10: return "SHT_SHLIB";
+    case 11: return "SHT_DYNSYM";
+    case 14: return "SHT_INIT_ARRAY";
+    case 15: return "SHT_FINI_ARRAY";
+    case 16: return "SHT_PREINIT_ARRAY";
+    case 17: return "SHT_GROUP";
+    case 18: return "SHT_SYMTAB_SHNDX";
+    case 19: return "SHT_RELR";
+    case 20: return	"SHT_NUM";
+    case 0x60000000: return "SHT_LOOS";
+    case 0x6ffffff5: return "SHT_GNU_ATTRIBUTES";
+    case 0x6ffffff6: return "SHT_GNU_HASH";
+    case 0x6ffffff7: return "SHT_GNU_LIBLIST";
+    case 0x6ffffff8: return "SHT_CHECKSUM";
+    case 0x6ffffffa: return "SHT_LOSUNW / SHT_SUNW_move";
+    case 0x6ffffffb: return "SHT_SUNW_COMDAT";
+    case 0x6ffffffc: return "SHT_SUNW_syminfo";
+    case 0x6ffffffd: return "SHT_GNU_verdef";
+    case 0x6ffffffe: return "SHT_GNU_verneed";
+    case 0x6fffffff: return "SHT_GNU_versym / SHT_HISUNW / SHT_HIOS";
+    case 0x70000000: return "SHT_LOPROC";
+    case 0x7fffffff: return "SHT_HIPROC";
+    case 0x80000000: return "SHT_LOUSER";
+    case 0x8fffffff: return "SHT_HIUSER";
+    default: return "UNKNOWN";
+  }
+}
+
 void printELF(Elf64_Ehdr* elf_header) {
   puts("");
   printf("ELF Header = %02X %02X %02X %02X\n", 
@@ -180,5 +220,18 @@ void printPH(Elf64_Phdr* program_header) {
   printf("sizeof image in segment: 0x%lX\n", program_header->p_filesz);
   printf("sizeof image in memory: 0x%lX\n", program_header->p_memsz);
   printf("alignment: 0x%lX\n", program_header->p_align);
+  puts("");
+}
+
+void printSH(Elf64_Shdr* section_header) {
+  printf("type: %s\n", get_sh_type(section_header->sh_type));
+  printf("flags: 0x%lX\n", section_header->sh_flags);
+  printf("address: 0x%lX\n", section_header->sh_addr);
+  printf("offset: 0x%lX\n", section_header->sh_offset);
+  printf("section size: 0x%lX\n", section_header->sh_size);
+  printf("link: 0x%X\n", section_header->sh_link);
+  printf("info: 0x%X\n", section_header->sh_info);
+  printf("alignment: 0x%lX\n", section_header->sh_addralign);
+  printf("entry size: 0x%lx\n", section_header->sh_entsize);
   puts("");
 }
